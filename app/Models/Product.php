@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Casts\SlugCast;
+use App\Traits\Model\HasSlug;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -10,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 class Product extends Model
 {
     use HasFactory;
+    use HasSlug;
 
     protected $fillable = [
         'name',
@@ -18,19 +21,6 @@ class Product extends Model
         'brand_id',
         'price',
     ];
-
-    /**
-     * @return void
-     * Генерация SLUG в момент создания записи
-     */
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::creating(function (Product $product) {
-            $product->slug = $product->slug ?? str($product->title)->slug();
-        });
-    }
 
     public function brand(): BelongsTo
     {
