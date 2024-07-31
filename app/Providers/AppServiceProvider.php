@@ -29,8 +29,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Model::preventLazyLoading(!app()->isProduction());
-        Model::preventSilentlyDiscardingAttributes(!app()->isProduction());
+        Model::shouldBeStrict(!app()->isProduction());
+
+//      оба метода есть в предыдущем
+//        Model::preventLazyLoading(!app()->isProduction());
+//        Model::preventSilentlyDiscardingAttributes(!app()->isProduction());
 
         RateLimiter::for('web', function (Request $request) {
             return Limit::perMinute(1)
@@ -43,15 +46,24 @@ class AppServiceProvider extends ServiceProvider
             return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
         });
 
-        DB::whenQueryingForLongerThan(500, function (Connection $connection, QueryExecuted $event) {
-            logger()
-                ->channel('telegram')
-                ->debug('whenQueryingForLongerThan: ' . $connection->query()->toSql());
-        });
+        if(app()->isProduction()) {
+            DB::listen(function ($query) {
+                if($query->time > 100) {
+                    logger()
+                        ->channel('telegram')
+                        ->debug('query longer than 1s ' . $query->sql, $query->bindings);
+                }
+            });
+
+            DB::whenQueryingForLongerThan( CarbonInterval::second(5), function (Connection $connection, QueryExecuted $event) {
+                logger()
+                    ->channel('telegram')
+                    ->debug('whenQueryingForLongerThan: ' . $connection->totalQueryDuration());
+            });
+        }
 
         // request cycle
-        $kernel = app(Kernel::class);
-        $kernel->whenRequestLifecycleIsLongerThan(
+        app(Kernel::class)->whenRequestLifecycleIsLongerThan(
             CarbonInterval::second(4),
             function () {
                 logger()
