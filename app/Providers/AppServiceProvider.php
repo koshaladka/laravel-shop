@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Listeners\SendEmailNewUserListener;
 use Carbon\CarbonInterval;
 use http\Env\Request;
 use Illuminate\Cache\RateLimiting\Limit;
@@ -9,6 +10,7 @@ use Illuminate\Database\Connection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Foundation\Http\Kernel;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\DB;
@@ -42,6 +44,7 @@ class AppServiceProvider extends ServiceProvider
                     return response('Take it easy', Response::HTTP_TOO_MANY_REQUESTS, $headers);
                 });
         });
+
         RateLimiter::for('api', function (Request $request) {
             return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
         });
@@ -70,6 +73,10 @@ class AppServiceProvider extends ServiceProvider
                     ->channel('telegram')
                     ->debug('whenRequestLifecycleIsLongerThan: ' . request()->url());
             }
+        );
+
+        Event::listen(
+            SendEmailNewUserListener::class,
         );
     }
 }

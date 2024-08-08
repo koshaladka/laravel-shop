@@ -17,13 +17,15 @@ return Application::configure(basePath: dirname(__DIR__))
         //
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        Integration::handles($exceptions);
 
-        $exceptions->reportable(function (Throwable $e) {
-            if (app()->bound('sentry')) {
-                app('sentry')->captureException($e);
-            }
-        });
+//        for Sentry
+//        Integration::handles($exceptions);
+
+//        $exceptions->reportable(function (Throwable $e) {
+//            if (app()->bound('sentry')) {
+//                app('sentry')->captureException($e);
+//            }
+//        });
 
         $exceptions->renderable(function (NotFoundHttpException $e) {
             return response()
