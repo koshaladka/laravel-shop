@@ -16,6 +16,12 @@ return new class extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
+            $table->foreignIdFor(Brand::class)
+                ->nullable()
+                ->constrained()
+                ->cascadeOnUpdate()
+                ->nullOnDelete();
+
             $table->string('slug')->unique();
             $table->string('title');
             $table->string('thumbnail')->nullable();
@@ -23,11 +29,8 @@ return new class extends Migration
             $table->unsignedInteger('price')
                 ->default(0);
 
-            $table->foreignIdFor(Brand::class)
-                ->nullable()
-                ->constrained()
-                ->cascadeOnUpdate()
-                ->nullOnDelete();
+            $table->boolean('on_home_page')->default(false);
+            $table->integer('sorting')->default(999);
 
             $table->timestamps();
         });

@@ -33,7 +33,7 @@ class AppServiceProvider extends ServiceProvider
     {
         Model::shouldBeStrict(!app()->isProduction());
 
-//      оба метода есть в предыдущем
+//      оба метода есть в Model::shouldBeStrict
 //        Model::preventLazyLoading(!app()->isProduction());
 //        Model::preventSilentlyDiscardingAttributes(!app()->isProduction());
 
@@ -78,5 +78,6 @@ class AppServiceProvider extends ServiceProvider
         Event::listen(
             SendEmailNewUserListener::class,
         );
+
     }
 }
