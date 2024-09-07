@@ -14,7 +14,7 @@ class Brand extends Model
     use HasSlug;
 
     protected $fillable = [
-        'name',
+        'title',
         'slug',
         'thumbnail',
         'on_home_page',

@@ -16,7 +16,7 @@ class Product extends Model
     use HasSlug;
 
     protected $fillable = [
-        'name',
+        'title',
         'slug',
         'thumbnail',
         'brand_id',
