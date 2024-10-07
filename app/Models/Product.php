@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Casts\SlugCast;
 use App\Traits\Model\HasSlug;
+use App\Traits\Model\HasThumbnail;
 use Illuminate\Contracts\Database\Query\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -14,6 +15,7 @@ class Product extends Model
 {
     use HasFactory;
     use HasSlug;
+    use HasThumbnail;
 
     protected $fillable = [
         'title',
@@ -24,6 +26,11 @@ class Product extends Model
         'on_home_page',
         'sorting',
     ];
+
+    protected function thumbnailDir(): string
+    {
+        return 'products';
+    }
 
     public function scopeHomePage(Builder $query)
     {
@@ -41,4 +48,6 @@ class Product extends Model
     {
         return $this->belongsToMany(Category::class);
     }
+
+
 }
